@@ -1,0 +1,17 @@
+require.config({
+  baseUrl:'./',
+  paths:{
+      "a":"js/a",
+      "b":"js/b",
+      "c":"js/c"
+  }
+});
+require(['a'],function(a){
+         console.log("abc");
+         a.hello()
+       //a.hello();
+       //b.hello();
+          //console.log(b.hello2(2,3));
+       //c.hello();
+           //c.thisb();
+   });

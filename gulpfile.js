@@ -13,6 +13,7 @@ var imagemin = require('gulp-imagemin'); // 图片压缩
 var browserSync = require('browser-sync').create(); // 启动本地服务，修改免F5刷新
 var useref = require('gulp-useref'); // 替换HTML中资源的引用路径
 var less = require("gulp-less"); // 添加less编译
+var amdOptimize = require('amd-optimize'); //处理requirejs模块
 
 // 路径配置
 var path = {
@@ -135,13 +136,14 @@ gulp.task('clean', function () {
     .pipe(clean());
 });
 // 9、监控文件的改变，页面动态刷新
-gulp.task('serve', function() {
+gulp.task('server', function() {
     browserSync.init({
-        port: 3434,
-        server: {
-            baseDir: ['./src/'],  // 启动服务的目录 默认 index.html
-            index: 'index.html'   // 自定义启动文件名
-        }
+      files: ['./src/css/*.css', './src/js/*.js', './src/*.html'],
+      port: 3434,
+      server: {
+          baseDir: ['./src/'],  // 启动服务的目录 默认 index.html
+          index: 'index.html'   // 自定义启动文件名
+      }
     });
 });
 
@@ -165,3 +167,34 @@ gulp.task('default', function (callback) {
     console.log('构建完成');
   })
 })
+
+// 13、本地开发命令
+gulp.task('dev', function (callback) {
+  // sequence的作用是让所有任务同步执行，gulp默认的是异步执行
+  sequence('server', 'auto', function () {
+    console.log('dev构建完成');
+  })
+})
+
+
+gulp.task('js2', function () {
+  /**
+   * amdOptimize.src 第一个参数指向 require html data-main 指向的mainjs
+   * amdOptimize.src 第二个参数指向 require config  
+   */
+  amdOptimize.src("src/js/main", {
+            paths: {
+              "a":"src/js/a",
+              "b":"src/js/b",
+              "c":"src/js/c"
+            },
+            baseUrl:'./',
+        })
+  .pipe(concat("main.js"))//合并
+  .pipe(uglify()) // 混淆
+  .pipe(rev())
+  .pipe(gulp.dest(path.output.js))
+  .pipe(rev.manifest())
+  .pipe(gulp.dest(path.rev.js))
+
+});
