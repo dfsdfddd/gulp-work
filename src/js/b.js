@@ -1,0 +1,1 @@
+console.log('这个是b.js')
