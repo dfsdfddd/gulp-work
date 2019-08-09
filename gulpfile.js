@@ -136,15 +136,15 @@ gulp.task('clean', function () {
     .pipe(clean());
 });
 // 9、监控文件的改变，页面动态刷新
-gulp.task('server', function() {
-    browserSync.init({
-      files: ['./src/css/*.css', './src/js/*.js', './src/*.html'],
-      port: 3434,
-      server: {
-          baseDir: ['./src/'],  // 启动服务的目录 默认 index.html
-          index: 'index.html'   // 自定义启动文件名
-      }
-    });
+gulp.task('server', function () {
+  browserSync.init({
+    files: ['./src/css/*.css', './src/js/*.js', './src/*.html'],
+    port: 3434,
+    server: {
+      baseDir: ['./src/'], // 启动服务的目录 默认 index.html
+      index: 'index.html' // 自定义启动文件名
+    }
+  });
 });
 
 
@@ -163,7 +163,7 @@ gulp.task('auto', function () {
 // 12、build
 gulp.task('default', function (callback) {
   // sequence的作用是让所有任务同步执行，gulp默认的是异步执行
-  sequence('clean', 'html', 'del', 'css', 'js', 'img', 'rev', 'copy', function () {
+  sequence('clean', 'html', 'del', 'css', 'js2', 'img', 'rev', 'copy', function () {
     console.log('构建完成');
   })
 })
@@ -176,25 +176,24 @@ gulp.task('dev', function (callback) {
   })
 })
 
-
+// gulp+require 解决require后页面引入多个js
 gulp.task('js2', function () {
   /**
    * amdOptimize.src 第一个参数指向 require html data-main 指向的mainjs
    * amdOptimize.src 第二个参数指向 require config  
    */
   amdOptimize.src("src/js/main", {
-            paths: {
-              "a":"src/js/a",
-              "b":"src/js/b",
-              "c":"src/js/c"
-            },
-            baseUrl:'./',
-        })
-  .pipe(concat("main.js"))//合并
-  .pipe(uglify()) // 混淆
-  .pipe(rev())
-  .pipe(gulp.dest(path.output.js))
-  .pipe(rev.manifest())
-  .pipe(gulp.dest(path.rev.js))
-
+      paths: {
+        "a": "src/js/a",
+        "b": "src/js/b",
+        "c": "src/js/c"
+      },
+      baseUrl: './',
+    })
+    .pipe(concat("main.js")) //合并
+    .pipe(uglify()) // 混淆
+    .pipe(rev())
+    .pipe(gulp.dest(path.output.js))
+    .pipe(rev.manifest())
+    .pipe(gulp.dest(path.rev.js))
 });
